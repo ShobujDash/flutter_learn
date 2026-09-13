@@ -16,11 +16,49 @@ class _CalculatorViewState extends State<CalculatorView> {
   final displayOneController = TextEditingController();
   final displayTwoController = TextEditingController();
 
+  late final AppLifecycleListener _listener;
+
   @override
   void initState() {
     super.initState();
     displayOneController.text = x.toString();
     displayTwoController.text = y.toString();
+
+    _listener = AppLifecycleListener(
+      onShow: _onShow,
+      onHide: _onHide,
+      onResume: _onResume,
+      onPause: _onPause,
+      onDetach: _onDetach,
+      onInactive: _onInactive,
+      onRestart: _onRestart,
+      onStateChange: _onStateChanged,
+    );
+  }
+
+  void _onShow() => print("onShow called");
+
+  void _onHide() => print("onHide called");
+
+  void _onResume() => print("onResume called");
+
+  void _onDetach() => print("onDetach called");
+
+  void _onPause() => print("onPause called");
+
+  void _onInactive() => print("onInactive called");
+
+  void _onRestart() => print("onRestart called");
+
+  void _onStateChanged(AppLifecycleState state) =>
+      print("onStateChange called: $state");
+
+  @override
+  void dispose() {
+    displayOneController.dispose();
+    displayTwoController.dispose();
+    _listener.dispose();
+    super.dispose();
   }
 
   @override
@@ -31,16 +69,19 @@ class _CalculatorViewState extends State<CalculatorView> {
         children: [
           // Calulator Display
           CalculatorDisplay(
+            key: const Key("displayOne"),
             hint: "Enter First Number",
             controller: displayOneController,
           ),
           SizedBox(height: 30.0),
           CalculatorDisplay(
+            key: const Key("displayTwo"),
             hint: "Enter Second Number",
             controller: displayTwoController,
           ),
           SizedBox(height: 30.0),
           Text(
+            key:const Key("Result"),
             z.toString(),
             style: TextStyle(fontSize: 60.0, fontWeight: FontWeight.bold),
           ),
@@ -55,7 +96,7 @@ class _CalculatorViewState extends State<CalculatorView> {
                       num.tryParse(displayTwoController.text)!;
                   setState(() {});
                 },
-                child: Icon(Icons.add),
+                  child: Icon(CupertinoIcons.add),
               ),
               FloatingActionButton(
                 onPressed: () {
